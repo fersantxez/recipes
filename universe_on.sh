@@ -24,8 +24,6 @@ scripts/build.sh
 #build image and marathon.json
 DOCKER_TAG=$PACKAGENAME docker/server/build.bash
 
-#save image to be added to nodes
-docker save -o $BASEDIR/$REPONAME/$REPONAME$PACKAGENAME.tar mesosphere/universe-server:$PACKAGENAME
 #run the docker image in the bootstrap node
 docker run -d --name universe-dev -p $SERVERPORT:80 mesosphere/universe-server:$PACKAGENAME
 
