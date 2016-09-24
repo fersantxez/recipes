@@ -8,7 +8,7 @@ pip3 install --upgrade pip jsonschema
 BASEDIR=~
 REPONAME=universe
 PACKAGENAME="openldap"
-SERVERIP=(ip addr show eth0 | grep -Eo \
+SERVERIP=$(ip addr show eth0 | grep -Eo \
  '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1) #this node's eth0
 SERVERPORT=8085
 
