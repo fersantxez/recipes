@@ -7,7 +7,7 @@ pip3 install --upgrade pip jsonschema
 #####################
 BASEDIR=~
 REPONAME=universe
-PACKAGENAME="openldap"
+PACKAGENAME="fernando-openldap"
 SERVERIP=$(ip addr show eth0 | grep -Eo \
  '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1) #this node's eth0
 SERVERPORT=8085
@@ -17,7 +17,7 @@ SERVERPORT=8085
 ########################################
 cd $BASEDIR
 rm -Rf $REPONAME
-git clone http://github.com/fernandosanchezmunoz/$REPONAME
+git clone -b $PACKAGENAME http://github.com/mesosphere/$REPONAME
 cd $REPONAME
 
 scripts/build.sh
