@@ -28,6 +28,9 @@ DOCKER_TAG=$PACKAGENAME docker/server/build.bash
 #run the docker image in the bootstrap node
 docker run -d --name universe-dev -p $SERVERPORT:80 mesosphere/universe-server:$PACKAGENAME
 
+#OPTIONAL: save image for exporting the repo
+docker save -o $BASEDIR/$REPONAME/$REPONAME$PACKAGENAME.tar mesosphere/universe-server:$PACKAGENAME
+
 #add repo from the universe we just started
 dcos package repo add --index=0 dev-universe http://$SERVERIP:$SERVERPORT/repo
 
