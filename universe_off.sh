@@ -4,7 +4,6 @@
 BASEDIR=~
 REPONAME=universe
 PACKAGENAME="openldap"
-SERVERIP=172.31.21.226
 SERVERPORT=8085
 
 #uninstall openldap package
