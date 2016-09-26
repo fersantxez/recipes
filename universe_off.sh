@@ -28,3 +28,5 @@ docker rmi $IMAGE:$TAG
 #remove complete repo for safety (make sure we don't reuse anything)
 rm -Rf $BASEDIR/$REPONAME
 #
+#remove temporary directories and volumes
+rm -Rf /tmp/*
