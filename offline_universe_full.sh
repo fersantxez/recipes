@@ -16,7 +16,10 @@ SERVERPORT=8082
 git clone https://github.com/mesosphere/universe.git --branch $BRANCH
 cd universe/docker/local-universe/
 sudo make base
+#FULL list
 sed -i -e 's/--selected/--include="arangodb3,artifactory,cassandra,chronos,confluent-kafka,dse,gitlab,jenkins,marathon,spark,arangodb,artifactory-lb,avi,bitbucket,calico,concord,confluent-connect,confluent-control-center,confluent-rest-proxy,confluent-schema-registry,crate,datadog,dcos-enterprise-cli,dynatrace,ecr-login,elasticsearch,etcd,exhibitor,gestalt-framework,hdfs,hue,kafka,kafka-manager,kibana,linkerd,linkerd-viz,logstash,marathon-lb,marathon-slack,mariadb,memsql,mr-redis,mysql,mysql-admin,namerd,netsil,netsil-collectors,nginx,omsdocker,openldap,openldap-admin,openvpn,openvpn-admin,postgresql,postgresql-admin,quobyte,riak,spark-notebook,storm,sysdig-cloud,tunnel-cli,vamp,weavescope,weavescope-probe,Weave,wordpress,zeppelin"/' Makefile
+#smaller list
+#sed -i -e 's/--selected/--include="artifactory,cassandra,chronos,gitlab,jenkins,marathon,spark,artifactory-lb,datadog,elasticsearch,etcd,exhibitor,hdfs,kafka,kibana,logstash,marathon-lb,mariadb,memsql,mr-redis,mysql,mysql-admin,nginx,openldap,openldap-admin,postgresql,postgresql-admin,sysdig-cloud,wordpress,zeppelin"/' Makefile
 sudo make local-universe
 
 #If node where generated is not the same node where loaded (e.g. offline bootstrap node), then
