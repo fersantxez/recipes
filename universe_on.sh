@@ -6,6 +6,7 @@ pip3 install --upgrade pip jsonschema
 #
 #####################
 BASEDIR=~
+GITHUB_USER=mesosphere
 REPONAME=universe
 PACKAGENAME="version-3.x"
 SERVERIP=$(ip addr show eth0 | grep -Eo \
@@ -17,7 +18,7 @@ SERVERPORT=8085
 ########################################
 cd $BASEDIR
 rm -Rf $REPONAME
-git clone -b $PACKAGENAME http://github.com/mesosphere/$REPONAME
+git clone -b $PACKAGENAME http://github.com/$GITHUB_USER/$REPONAME
 cd $REPONAME
 
 scripts/build.sh
