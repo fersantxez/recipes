@@ -4,11 +4,13 @@
 BASEDIR=~
 REPONAME=universe
 PACKAGENAME="openldap"
+BACKEND_PACKAGE=""
 SERVERPORT=8085
 
 #uninstall openldap package
 dcos package uninstall $PACKAGENAME
 dcos package uninstall $PACKAGENAME-admin
+dcos package uninstall $BACKEND_PACKAGE
 #
 
 ######
