@@ -9,6 +9,7 @@ BASEDIR=~
 GITHUB_USER=mesosphere
 REPONAME=universe
 PACKAGENAME="version-3.x"
+BACKEND_PACKAGE=""
 SERVERIP=$(ip addr show eth0 | grep -Eo \
  '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1) #this node's eth0
 SERVERPORT=8085
@@ -38,6 +39,7 @@ dcos package repo add --index=0 dev-universe http://$SERVERIP:$SERVERPORT/repo
 #check that the universe is running -- FROM THE BOOTSTRAP OR ANY NODE
 #curl http://$SERVERIP:8085/repo | grep $PACKAGENAME
 
+dcos package install --yes $BACKEND_PACKAGE
 dcos package install --yes $PACKAGENAME
 dcos package install --yes $PACKAGENAME-admin
 
