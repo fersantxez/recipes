@@ -1,4 +1,5 @@
 #PREREQUISITES
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y epel-release
 yum install -y git python-pip python34 jq nginx
 curl https://bootstrap.pypa.io/get-pip.py | python3.4
