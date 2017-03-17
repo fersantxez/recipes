@@ -18,7 +18,7 @@ git clone https://github.com/mesosphere/universe.git --branch $BRANCH
 cd universe/docker/local-universe/
 sudo make base
 #FULL list
-sed -i -e 's/--selected/--include=$PACKAGE_LIST/' Makefile
+sed -i -e "s/--selected/--include=$PACKAGE_LIST/" Makefile
 #smaller list
 #sed -i -e 's/--selected/--include="artifactory,cassandra,chronos,gitlab,jenkins,marathon,spark,artifactory-lb,datadog,elasticsearch,etcd,exhibitor,hdfs,kafka,kibana,logstash,marathon-lb,mariadb,memsql,mr-redis,mysql,mysql-admin,nginx,openldap,openldap-admin,postgresql,postgresql-admin,sysdig-cloud,wordpress,zeppelin"/' Makefile
 sudo make local-universe
