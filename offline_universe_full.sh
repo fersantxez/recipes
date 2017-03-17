@@ -5,6 +5,7 @@ curl https://bootstrap.pypa.io/get-pip.py | python3.4
 pip3 install --upgrade pip jsonschema
 
 #variables
+PACKAGE_LIST="arangodb3,artifactory,cassandra,confluent-kafka,elastic,gitlab,jenkins,marathon,spark,arangodb,artifactory-lb,avi,bitbucket,bookkeeper,cadvisor,calico,ceph,ceph-dash,chronos,concord,confluent-connect,confluent-control-center,confluent-replicator,confluent-rest-proxy,confluent-schema-registry,crate,datadog,dcos-enterprise-cli,dynatrace,ecr-login,elasticsearch,etcd,exhibitor,flink,geoserver,gestalt-framework,grafana,hdfs,hello-world,hue,influxdb,instana-agent,kafka,kafka-manager,kibana,koding,kong,linkerd,linkerd-viz,logstash,marathon-lb,marathon-slack,mariadb,memsql,minio,mongodb,mongodb-admin,mongodb-replicaset,mr-redis,msoms,mysql,mysql-admin,namerd,neo4j,neo4j-proxy,neo4j-replica,netsil,netsil-collectors,nexus,nginx,nifi,openldap,openldap-admin,openvpn,openvpn-admin,portworx,postgresql,postgresql-admin,quobyte,redis,registry,riak,scale,spark-history,spark-notebook,spark-shuffle,sqlserver,storm,sysdig-cloud,tunnel-cli,vamp,weavescope,Weave,weavescope-probe,Weave,wordpress,zeppelin"
 BASEDIR=~
 REPONAME=universe
 BRANCH="version-3.x"
@@ -17,7 +18,7 @@ git clone https://github.com/mesosphere/universe.git --branch $BRANCH
 cd universe/docker/local-universe/
 sudo make base
 #FULL list
-sed -i -e 's/--selected/--include="arangodb3,artifactory,cassandra,chronos,confluent-kafka,dse,gitlab,jenkins,marathon,spark,arangodb,artifactory-lb,avi,bitbucket,calico,concord,confluent-connect,confluent-control-center,confluent-rest-proxy,confluent-schema-registry,crate,datadog,dcos-enterprise-cli,dynatrace,ecr-login,elasticsearch,etcd,exhibitor,gestalt-framework,hdfs,hue,kafka,kafka-manager,kibana,linkerd,linkerd-viz,logstash,marathon-lb,marathon-slack,mariadb,memsql,mr-redis,mysql,mysql-admin,namerd,netsil,netsil-collectors,nginx,omsdocker,openldap,openldap-admin,openvpn,openvpn-admin,postgresql,postgresql-admin,quobyte,riak,spark-notebook,storm,sysdig-cloud,tunnel-cli,vamp,weavescope,weavescope-probe,Weave,wordpress,zeppelin"/' Makefile
+sed -i -e 's/--selected/--include=$PACKAGE_LIST/' Makefile
 #smaller list
 #sed -i -e 's/--selected/--include="artifactory,cassandra,chronos,gitlab,jenkins,marathon,spark,artifactory-lb,datadog,elasticsearch,etcd,exhibitor,hdfs,kafka,kibana,logstash,marathon-lb,mariadb,memsql,mr-redis,mysql,mysql-admin,nginx,openldap,openldap-admin,postgresql,postgresql-admin,sysdig-cloud,wordpress,zeppelin"/' Makefile
 sudo make local-universe
