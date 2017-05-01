@@ -2,8 +2,8 @@
 #mount s3 bucket into cloud instances
 BUCKET_NAME=fernando-sanchez
 MOUNT_POINT=/mnt/s3
-ACCESS_KEY_ID=AKIAJZGXV3RQ43BD3BMA
-AWS_SECRET_ACCESS_KEY=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
+ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
 
 #install requirements
 yum remove fuse fuse-s3fs
