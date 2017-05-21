@@ -4,7 +4,12 @@ yum install -y epel-release
 yum install -y git python-pip python34 jq nginx
 curl https://bootstrap.pypa.io/get-pip.py | python3.4
 pip3 install --upgrade pip jsonschema
-#
+# upgrade python to 3.6+ for latest universe
+sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+sudo yum -y install python36u python36u-pip
+sudo ln -s /usr/bin/python3.6 /bin/python3
+sudo ln -s /bin/pyenv-3.6 /bin/pyenv
+ln -s /bin/pydoc-3.6 /bin/pydoc3
 #####################
 BASEDIR=~
 GITHUB_USER=mesosphere
