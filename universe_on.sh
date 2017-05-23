@@ -7,8 +7,11 @@ pip3 install --upgrade pip jsonschema
 # upgrade python to 3.6+ for latest universe
 sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
 sudo yum -y install python36u python36u-pip
+sudo mv /bin/python3 /bin/python3.bak.3-4
 sudo ln -s /usr/bin/python3.6 /bin/python3
+sudo mv /bin/pyenv /bin/pyenv.bak.3-4
 sudo ln -s /bin/pyenv-3.6 /bin/pyenv
+sudo mv /bin/pydoc3 /bin/pydoc3.bak-3.4
 ln -s /bin/pydoc-3.6 /bin/pydoc3
 #####################
 BASEDIR=~
