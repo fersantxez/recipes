@@ -1,0 +1,1 @@
+sudo guestunmount /media/vhd/
