@@ -18,7 +18,7 @@
 export SERVER_NET=192.168.86.24/24   
 
 #modify this value to match the address of the remote cloud client's LAN interface
-export CLIENT_NET_GW=10.150.0.42
+export CLOUD_NET_GW=10.150.0.42
 
 #interface names in the OpenVPN LAN server
 export SERVER_INT_IF=enp2s0f1 #TO_LAN
@@ -28,9 +28,13 @@ export SERVER_EXT_IF=openvpn_server #TO_VPN
 #this should have been done already on the GUI to get things working
 #echo 1 > /proc/sys/net/ipv4/ip_forward
 
-#enable traffic from openvpn to LAN: TCP on ports 80 and 443
-iptables -A FORWARD -i $SERVER_EXT_IF -o $SERVER_INT_IF -p tcp --syn --dport 80 -m conntrack --ctstate NEW -j ACCEPT
-iptables -A FORWARD -i $SERVER_EXT_IF -o $SERVER_INT_IF -p tcp --syn --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+#enable traffic from openvpn to LAN: only TCP on ports 80 and 443
+#iptables -A FORWARD -i $SERVER_EXT_IF -o $SERVER_INT_IF -p tcp --syn --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+#iptables -A FORWARD -i $SERVER_EXT_IF -o $SERVER_INT_IF -p tcp --syn --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+
+#enable traffic from openvpn to LAN: ALL TRAFFIC (not only TCP on ports 80 and 443)
+iptables -A FORWARD -i $SERVER_EXT_IF -o $SERVER_INT_IF --syn -m conntrack --ctstate NEW -j ACCEPT
+
 
 #enable returning traffic from established connections on both directions
 iptables -A FORWARD -i $SERVER_EXT_IF -o $SERVER_INT_IF -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
@@ -46,4 +50,5 @@ iptables -t nat -A POSTROUTING -o $SERVER_INT_IF -j MASQUERADE
 
 #Add the below route to reach the on-prem instance.
 ip route add $SERVER_NET via $CLIENT_NET_GW dev $SERVER_INT_IF
+
 
