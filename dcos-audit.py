@@ -6,7 +6,7 @@
 # DESCRIPTION:
 #       This script reads the Enterprise DC/OS audit log files and forwards the
 #       entries into an elasticsearch instance. Run this program on every 
-#       master node. This program processes the following Enterprise DC/OS Audit Events:
+#       main node. This program processes the following Enterprise DC/OS Audit Events:
 #
 #           CREATE USER
 #           DELETE USER
@@ -44,7 +44,7 @@
 #
 #           dcos package install --yes elasticsearch
 #
-#       2. Run this program on EVERY master node in your DC/OS cluster. First you
+#       2. Run this program on EVERY main node in your DC/OS cluster. First you
 #          will have to install two python packages that this program requires.
 #          Use the these commands to install the python packages:
 #
@@ -97,7 +97,7 @@
 #
 #       5. Search the Elasticsearch repository and display the fowarded events.
 #
-#           a. SSH into one of the master or agent nodes in the cluster
+#           a. SSH into one of the main or agent nodes in the cluster
 #
 #           b. Install several required python packages with the commands:
 #
@@ -119,8 +119,8 @@
 # import dns.resolver
 # 
 # try:
-#     esDnsName = '_elasticsearch-executor._tcp.elasticsearch.slave.mesos.' # Old service
-#     # esDnsName = '_elastic._tcp.marathon.slave.mesos.'  # New elastic service
+#     esDnsName = '_elasticsearch-executor._tcp.elasticsearch.subordinate.mesos.' # Old service
+#     # esDnsName = '_elastic._tcp.marathon.subordinate.mesos.'  # New elastic service
 #     dnsResults = dns.resolver.query(esDnsName, 'SRV')
 #     for dnsEntry in dnsResults:
 #         # get first line of results
@@ -206,7 +206,7 @@ def get_elasticsearch_conn():
 
     # Get Elasticsearch worker nodes
     try:
-        esDnsName = '_elasticsearch-executor._tcp.elasticsearch.slave.mesos.'
+        esDnsName = '_elasticsearch-executor._tcp.elasticsearch.subordinate.mesos.'
 
         dnsResults = dns.resolver.query(esDnsName, 'SRV')
 
@@ -315,9 +315,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # CREATE USER Event
     #
-    # Dec 06 18:00:30 c1mas1 nginx[24163]: 2016/12/06 18:04:13 [notice] 9829#0: *53789 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `admin`, client: 10.0.0.119, server: master.mesos, request: "PUT /acs/api/v1/users/gpalmer7?_timestamp=1481065453618 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 06 18:00:30 c1mas1 nginx[24163]: 2016/12/06 18:04:13 [notice] 9829#0: *53789 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `admin`, client: 10.0.0.119, server: main.mesos, request: "PUT /acs/api/v1/users/gpalmer7?_timestamp=1481065453618 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: \"PUT \/acs\/api\/v.\/users\/(.+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: \"PUT \/acs\/api\/v.\/users\/(.+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the created user
         requestingUser = result.group(1)
@@ -341,9 +341,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # DELETE USER Event
     #
-    # Dec 16 16:35:25 c1mas1 nginx[4459]: 2016/12/16 16:35:25 [notice] 16118#0: *44004 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "DELETE /acs/api/v1/users/gpalmer2?_timestamp=1481924125397 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 16:35:25 c1mas1 nginx[4459]: 2016/12/16 16:35:25 [notice] 16118#0: *44004 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "DELETE /acs/api/v1/users/gpalmer2?_timestamp=1481924125397 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "DELETE \/acs\/api\/v.\/users\/(.[^\/]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "DELETE \/acs\/api\/v.\/users\/(.[^\/]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the created user
         requestingUser = result.group(1)
@@ -365,9 +365,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # CREATE GROUP Event
     #
-    # Dec 05 18:23:30 ip-10-0-6-118.us-west-2.compute.internal nginx[2002]: 2016/12/05 18:23:30 [notice] 26371#0: *175698 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.4.127, server: master.mesos, request: "PUT /acs/api/v1/groups/group1?_timestamp=1480962209907 HTTP/1.1", host: "gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com/"
+    # Dec 05 18:23:30 ip-10-0-6-118.us-west-2.compute.internal nginx[2002]: 2016/12/05 18:23:30 [notice] 26371#0: *175698 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.4.127, server: main.mesos, request: "PUT /acs/api/v1/groups/group1?_timestamp=1480962209907 HTTP/1.1", host: "gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/acs\/api\/v.\/groups\/(.[^\/]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/acs\/api\/v.\/groups\/(.[^\/]+)\?_timestamp=', line)
 
     if result:
         # Get the requesting user and the created group
@@ -390,9 +390,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # DELETE GROUP Event
     #
-    # Dec 16 14:52:02 c1mas1 nginx[4459]: 2016/12/16 14:52:02 [notice] 8318#0: *9678 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "DELETE /acs/api/v1/groups/group3?_timestamp=1481917922360 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 14:52:02 c1mas1 nginx[4459]: 2016/12/16 14:52:02 [notice] 8318#0: *9678 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "DELETE /acs/api/v1/groups/group3?_timestamp=1481917922360 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "DELETE \/acs\/api\/v.\/groups\/(.[^\/]+)\?_timestamp=',line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "DELETE \/acs\/api\/v.\/groups\/(.[^\/]+)\?_timestamp=',line)
 
     if result:
         # Get the requesting user and the created group
@@ -415,9 +415,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # ADD USER TO GROUP Event
     #
-    # Dec 05 18:24:37 ip-10-0-6-118.us-west-2.compute.internal nginx[2002]: 2016/12/05 18:24:37 [notice] 26561#0: *176833 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.4.127, server: master.mesos, request: "PUT /acs/api/v1/groups/group1/users/gpalmer?_timestamp=1480962276489 HTTP/1.1", host: "gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com/"
+    # Dec 05 18:24:37 ip-10-0-6-118.us-west-2.compute.internal nginx[2002]: 2016/12/05 18:24:37 [notice] 26561#0: *176833 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.4.127, server: main.mesos, request: "PUT /acs/api/v1/groups/group1/users/gpalmer?_timestamp=1480962276489 HTTP/1.1", host: "gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-1dxvqfwd208r-482797201.us-west-2.elb.amazonaws.com/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/acs\/api\/v.\/groups\/(.+)\/users\/(.+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/acs\/api\/v.\/groups\/(.+)\/users\/(.+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the user and group
         requestingUser = result.group(1)
@@ -440,9 +440,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # ADD ACL TO GROUP Event
     #
-    # Dec 16 16:52:29 c1mas1 nginx[4459]: 2016/12/16 16:52:29 [notice] 17439#0: *50131 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "PUT /acs/api/v1/acls/dcos:adminrouter:service:marathon/groups/group1/full?_timestamp=1481925149914 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 16:52:29 c1mas1 nginx[4459]: 2016/12/16 16:52:29 [notice] 17439#0: *50131 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "PUT /acs/api/v1/acls/dcos:adminrouter:service:marathon/groups/group1/full?_timestamp=1481925149914 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/acs\/api\/v.\/acls\/(.[^\/]+)\/groups\/(.[^\/]+)\/(.[^\?]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/acs\/api\/v.\/acls\/(.[^\/]+)\/groups\/(.[^\/]+)\/(.[^\?]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the user and group
         requestingUser = result.group(1)
@@ -468,9 +468,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # REMOVE ACL FROM GROUP Event
     #
-    # Dec 30 13:35:53 ip-10-0-6-213.us-west-2.compute.internal nginx[1968]: 2016/12/30 13:35:53 [notice] 7753#0: *17667 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.7.231, server: master.mesos, request: "DELETE /acs/api/v1/acls/dcos:adminrouter:service:marathon/groups/mobile-apps/full?_timestamp=1483104953519 HTTP/1.1", host: "gregpalme-elasticl-ty0pnk41hsmb-1635574205.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-ty0pnk41hsmb-1635574205.us-west-2.elb.amazonaws.com/"
+    # Dec 30 13:35:53 ip-10-0-6-213.us-west-2.compute.internal nginx[1968]: 2016/12/30 13:35:53 [notice] 7753#0: *17667 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.7.231, server: main.mesos, request: "DELETE /acs/api/v1/acls/dcos:adminrouter:service:marathon/groups/mobile-apps/full?_timestamp=1483104953519 HTTP/1.1", host: "gregpalme-elasticl-ty0pnk41hsmb-1635574205.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-ty0pnk41hsmb-1635574205.us-west-2.elb.amazonaws.com/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "DELETE \/acs\/api\/v.\/acls\/(.[^\/]+)\/groups\/(.[^\/]+)\/(.[^\?]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "DELETE \/acs\/api\/v.\/acls\/(.[^\/]+)\/groups\/(.[^\/]+)\/(.[^\?]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the user and group
         requestingUser = result.group(1)
@@ -496,9 +496,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # REMOVE USER FROM GROUP Event
     #
-    # Dec 16 16:44:40 c1mas1 nginx[4459]: 2016/12/16 16:44:40 [notice] 16824#0: *47435 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "DELETE /acs/api/v1/groups/group1/users/gpalmer?_timestamp=1481924680985 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 16:44:40 c1mas1 nginx[4459]: 2016/12/16 16:44:40 [notice] 16824#0: *47435 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "DELETE /acs/api/v1/groups/group1/users/gpalmer?_timestamp=1481924680985 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "DELETE \/acs\/api\/v.\/groups\/(.[^\/]+)\/users\/(.[^\/]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "DELETE \/acs\/api\/v.\/groups\/(.[^\/]+)\/users\/(.[^\/]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the user and group
         requestingUser = result.group(1)
@@ -586,9 +586,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # CREATE SAML PROVIDER Event
     #
-    # Dec 16 17:32:34 c1mas1 nginx[4459]: 2016/12/16 17:32:34 [notice] 20527#0: *63988 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "PUT /acs/api/v1/auth/saml/providers/gregssaml?_timestamp=1481927554861 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 17:32:34 c1mas1 nginx[4459]: 2016/12/16 17:32:34 [notice] 20527#0: *63988 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "PUT /acs/api/v1/auth/saml/providers/gregssaml?_timestamp=1481927554861 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/acs\/api\/v.\/auth\/saml\/providers\/(.[^\/]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/acs\/api\/v.\/auth\/saml\/providers\/(.[^\/]+)\?_timestamp=', line)
 
     if result:
         # Get the requesting user and the created group
@@ -611,9 +611,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # CREATE LDAP DIRECTORY Event
     #
-    # Dec 16 17:44:09 c1mas1 nginx[4459]: 2016/12/16 17:44:09 [notice] 21365#0: *67274 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "PUT /acs/api/v1/ldap/config?_timestamp=1481928249246 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 17:44:09 c1mas1 nginx[4459]: 2016/12/16 17:44:09 [notice] 21365#0: *67274 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "PUT /acs/api/v1/ldap/config?_timestamp=1481928249246 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/acs\/api\/v.\/ldap\/config\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/acs\/api\/v.\/ldap\/config\?_timestamp=', line)
     if result:
         # Get the requesting user and the created group
         requestingUser = result.group(1)
@@ -634,9 +634,9 @@ def check_log_file_entry(p, f, line, es):
     #
     # CREATE OAUTH2 PROVIDER Event
     #
-    # Dec 16 17:32:34 c1mas1 nginx[4459]: 2016/12/16 17:32:34 [notice] 20527#0: *63988 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "PUT /acs/api/v1/auth/saml/providers/gregssaml?_timestamp=1481927554861 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 17:32:34 c1mas1 nginx[4459]: 2016/12/16 17:32:34 [notice] 20527#0: *63988 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "PUT /acs/api/v1/auth/saml/providers/gregssaml?_timestamp=1481927554861 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/acs\/api\/v.\/auth\/oidc\/providers\/(.[^\/]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/acs\/api\/v.\/auth\/oidc\/providers\/(.[^\/]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the created group
         requestingUser = result.group(1)
@@ -658,11 +658,11 @@ def check_log_file_entry(p, f, line, es):
     #
     # CREATE SECRET Event
     #
-    # Dec 16 17:51:42 c1mas1 nginx[4459]: 2016/12/16 17:51:42 [notice] 21980#0: *69627 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: master.mesos, request: "PUT /secrets/v1/secret/default/gregssecret1?_timestamp=1481928702829 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
+    # Dec 16 17:51:42 c1mas1 nginx[4459]: 2016/12/16 17:51:42 [notice] 21980#0: *69627 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `adminuser`, client: 10.0.0.119, server: main.mesos, request: "PUT /secrets/v1/secret/default/gregssecret1?_timestamp=1481928702829 HTTP/1.1", host: "c1mas1", referrer: "https://c1mas1/"
     #
-    # Dec 31 14:54:37 ip-10-0-7-80.us-west-2.compute.internal nginx[2126]: 2016/12/31 14:54:37 [notice] 8916#0: *19829 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.5.20, server: master.mesos, request: "PUT /secrets/v1/secret/default/mysql-pass-secret?_timestamp=1483196077671 HTTP/1.1", host: "gregpalme-elasticl-wuj213rw28um-1301724768.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-wuj213rw28um-1301724768.us-west-2.elb.amazonaws.com/"
+    # Dec 31 14:54:37 ip-10-0-7-80.us-west-2.compute.internal nginx[2126]: 2016/12/31 14:54:37 [notice] 8916#0: *19829 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.5.20, server: main.mesos, request: "PUT /secrets/v1/secret/default/mysql-pass-secret?_timestamp=1483196077671 HTTP/1.1", host: "gregpalme-elasticl-wuj213rw28um-1301724768.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-wuj213rw28um-1301724768.us-west-2.elb.amazonaws.com/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "PUT \/secrets\/v.\/secret\/default\/(.[^\/]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "PUT \/secrets\/v.\/secret\/default\/(.[^\/]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the created group
         requestingUser = result.group(1)
@@ -688,9 +688,9 @@ def check_log_file_entry(p, f, line, es):
     # DELETE SECRET Event
     #
     # 
-    # Jan 03 15:05:35 ip-10-0-5-147.us-west-2.compute.internal nginx[2123]: 2017/01/03 15:05:35 [notice] 21216#0: *102874 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.6.216, server: master.mesos, request: "DELETE /secrets/v1/secret/default/mobile-apps/app1/mysecret?_timestamp=1483455935389 HTTP/1.1", host: "gregpalme-elasticl-1xhcp4kutdrsg-1630258365.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-1xhcp4kutdrsg-1630258365.us-west-2.elb.amazonaws.com/"
+    # Jan 03 15:05:35 ip-10-0-5-147.us-west-2.compute.internal nginx[2123]: 2017/01/03 15:05:35 [notice] 21216#0: *102874 [lua] auth.lua:196: validate_jwt_or_exit(): UID from valid JWT: `bootstrapuser`, client: 10.0.6.216, server: main.mesos, request: "DELETE /secrets/v1/secret/default/mobile-apps/app1/mysecret?_timestamp=1483455935389 HTTP/1.1", host: "gregpalme-elasticl-1xhcp4kutdrsg-1630258365.us-west-2.elb.amazonaws.com", referrer: "https://gregpalme-elasticl-1xhcp4kutdrsg-1630258365.us-west-2.elb.amazonaws.com/"
 
-    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: master.mesos, request: "DELETE \/secrets\/v.\/secret\/default\/(.[^\?]+)\?_timestamp=', line)
+    result = re.search(r'UID from valid JWT: `(.+)`, client: .+, server: main.mesos, request: "DELETE \/secrets\/v.\/secret\/default\/(.[^\?]+)\?_timestamp=', line)
     if result:
         # Get the requesting user and the created group
         requestingUser = result.group(1)
